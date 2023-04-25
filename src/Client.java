@@ -46,13 +46,18 @@ public class Client {
     private ObjectOutputStream out;
     private ObjectInputStream in;
     private int[] position;
+    private String id;
 
     public Client() {
         try {
             socket = new Socket(HOST, PORT);
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
+            id = in.readObject().toString();
+            System.out.println(id);
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
 //        try {
@@ -70,7 +75,11 @@ public class Client {
 //        }
     }
 
-    public void sendMessage(String message){
+    public String getId() {
+        return this.id;
+    }
+
+    public void sendMessage(String message) {
         try {
             out.writeObject(message);
             out.flush();
@@ -89,21 +98,34 @@ public class Client {
         }
     }
 
-    public static void main(String[] args) {
-        // Create a new client instance
-        Client client = new Client();
-
-        // Send a position to the server
-        int[] newPosition = {1, 2, 3}; // Replace with your desired position data
-        client.sendPosition(newPosition);
-
-        // Close the socket and streams
+    public String readFromServer()
+    {
         try {
-            client.out.close();
-            client.in.close();
-            client.socket.close();
+            return in.readObject().toString();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
+
 }
+//
+//    public static void main(String[] args) {
+//        // Create a new client instance
+//        Client client = new Client();
+//
+//        // Send a position to the server
+//        int[] newPosition = {1, 2, 3}; // Replace with your desired position data
+//        client.sendPosition(newPosition);
+//
+//        // Close the socket and streams
+//        try {
+//            client.out.close();
+//            client.in.close();
+//            client.socket.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+//}

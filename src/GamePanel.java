@@ -12,31 +12,34 @@ import java.util.List;
 public class GamePanel extends JPanel implements Runnable, KeyListener, MouseListener
 {
     public Player myPlayer;
+    public Player opponent;
     public LinkedList<Bullet> bullets;
-    Opponent opponent;
+//    Opponent opponent;
     public List<Enemy> enemies;
     private Image backgroundImage;
     private Client client;
     private boolean isOffline;
+//    private String id;
 
     public GamePanel(boolean isOffline) {
-        myPlayer = new Player(this);
-        bullets = new LinkedList<>();
-        backgroundImage = new ImageIcon("Images/img.png").getImage();
+        setPanelSettings();
 
+        myPlayer = new Player(this);
+        opponent = new Player(this);
+
+        bullets = new LinkedList<>();
         enemies = Collections.synchronizedList(new LinkedList<Enemy>());
-        this.setFocusable(true);        //move to setPanelSettings function
-        this.requestFocus();
-        this.addMouseListener(this);
-        this.addKeyListener(this);
+        opponent.setX(myPlayer.getX() + 300);
 
         client = new Client();
-        if(!isOffline) {
-            opponent = new Opponent(this);
-        }
+        String id = client.getId();
+        checkPlayerId(id);
+
         this.isOffline = isOffline;
         new Thread(this).start();
-
+//        if(!isOffline) {
+//            opponent = new Opponent(this);
+//        }
     }
 
     @Override
@@ -56,19 +59,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
         }
         else{
             opponent.start();
-            int [] testArr = {1,2,3};
-            client.sendPosition(testArr);
+
             while(true){
-//                opponent.client.writeData(myPlayer.position());
-                List<Bullet> bulletsCopy = new ArrayList<>(bullets);
-                for (Bullet bullet : bulletsCopy) {
-                    if (bullet.getX() >= Sizes.WINDOW_MAX_WIDTH || bullet.getX() < 0) {
-                        bullets.remove(bullet);
-                    }
-                }
+
                 client.sendPosition(myPlayer.position());
+                System.out.println(client.readFromServer());
+
                 try {
-                    Thread.sleep(80);
+                    Thread.sleep(150);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -83,14 +81,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
         super.paintComponent(g);
         g.drawImage(backgroundImage, 0, 0, Sizes.WINDOW_MAX_WIDTH, Sizes.WINDOW_MAX_HEIGHT, this);
         myPlayer.draw(g);
-        for (Enemy enemy : enemies) {
-            enemy.draw(g);
-        }
+        opponent.draw(g);
+//        for (Enemy enemy : enemies) {
+//            enemy.draw(g);
+//        }
         for (Bullet bullet : bullets) {
             bullet.draw(g);
-        }
-        if(!isOffline){
-            opponent.draw(g);
         }
 
 
@@ -112,6 +108,23 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
     }
 
+    private void checkPlayerId(String id)
+    {
+        if(id.equals("P1")) return;
+        Player tempPlayer = myPlayer;
+        myPlayer = opponent;
+        opponent = tempPlayer;
+    }
+
+    private void setPanelSettings()
+    {
+        backgroundImage = new ImageIcon("Images/img.png").getImage();
+        this.setFocusable(true);        //move to setPanelSettings function
+        this.requestFocus();
+        this.addMouseListener(this);
+        this.addKeyListener(this);
+
+    }
     @Override
     public void keyTyped(KeyEvent e) {
     }
@@ -131,7 +144,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
                     this.myPlayer.setAccX(-0.1);
                     this.myPlayer.setVelX(-5);
                 }
-                this.client.sendMessage("Jumped");
                 this.myPlayer.jump();
                 break;
 

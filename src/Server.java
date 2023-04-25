@@ -11,6 +11,8 @@ public class Server {
     private ServerSocket serverSocket;
     private List<ObjectOutputStream> clientsOut;
     private List<ObjectInputStream> clientsIn;
+    public String [] clientsNames = {"P1", "P2"};
+    int clientNamesPointer = 0;
 
     public Server() {
         clientsOut = new ArrayList<>();
@@ -28,7 +30,8 @@ public class Server {
                 ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());
                 clientsOut.add(out);
                 clientsIn.add(in);
-
+                out.writeObject(clientsNames[clientNamesPointer]);
+                clientNamesPointer++;
                 // Start a new thread to handle the client
                 ClientHandler handler = new ClientHandler(clientSocket, out);
                 new Thread(handler).start();

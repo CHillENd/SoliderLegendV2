@@ -26,6 +26,7 @@ public class Player extends Thread implements Drawable {
     public double getX() {
         return this.playerXPos;
     }
+    public void setX(double x){ this.playerXPos = x;}
     public double getY() {
         return this.playerYPos;
     }
@@ -66,7 +67,10 @@ public class Player extends Thread implements Drawable {
         return (healthBar.getCurrentHealth() >= 0);
     }
 
-
+    private String readFromSever()
+    {
+        return client.readFromServer();
+    }
     void updatePlayerPos (int arr[]){
 
     }
