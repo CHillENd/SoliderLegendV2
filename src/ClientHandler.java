@@ -46,7 +46,7 @@ public class ClientHandler implements Runnable {
                     // Receive position from the client
                     int[] newPosition = (int[]) in.readObject();
                     position = newPosition;
-                    server.broadcast(position);
+//                    server.broadcast(position);
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
@@ -59,7 +59,7 @@ public class ClientHandler implements Runnable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            server.removeClient(this);
+//            server.removeClient(this);
             System.out.println("Client disconnected: " + socket.getInetAddress());
         }
     }

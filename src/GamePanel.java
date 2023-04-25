@@ -31,8 +31,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
         this.addKeyListener(this);
 
         client = new Client();
-        if(!isOffline)
+        if(!isOffline) {
             opponent = new Opponent(this);
+        }
         this.isOffline = isOffline;
         new Thread(this).start();
 
@@ -55,9 +56,22 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
         }
         else{
             opponent.start();
-
+            int [] testArr = {1,2,3};
+            client.sendPosition(testArr);
             while(true){
 //                opponent.client.writeData(myPlayer.position());
+                List<Bullet> bulletsCopy = new ArrayList<>(bullets);
+                for (Bullet bullet : bulletsCopy) {
+                    if (bullet.getX() >= Sizes.WINDOW_MAX_WIDTH || bullet.getX() < 0) {
+                        bullets.remove(bullet);
+                    }
+                }
+                client.sendPosition(myPlayer.position());
+                try {
+                    Thread.sleep(80);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
 
             }
         }
@@ -110,17 +124,19 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
                 break;
             case (KeyEvent.VK_A):
                 this.myPlayer.setAccX(-0.1);
+
                 break;
             case (KeyEvent.VK_W):
                 if (e.isAltDown()) {
                     this.myPlayer.setAccX(-0.1);
                     this.myPlayer.setVelX(-5);
                 }
+                this.client.sendMessage("Jumped");
                 this.myPlayer.jump();
                 break;
 
         }
-        client.sendPosition(myPlayer.position());
+        //client.sendPosition(myPlayer.position());
     }
 
     @Override
