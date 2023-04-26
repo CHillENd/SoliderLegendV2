@@ -27,9 +27,6 @@ public class Bullet implements Runnable{
         this.valY = deltaY / distance * 10;
 
         this.isCreatedByPlayer = isMyPlayerShotMe;
-//        isCollidingWithPlayer = isCollidingWith(gamePanel.myPlayer);
-//        isCollidingWithOpponent = isCollidingWith(gamePanel.opponent);
-
         this.bulletImage = new ImageIcon("Images/img_3.png").getImage();
     }
 
@@ -47,19 +44,16 @@ public class Bullet implements Runnable{
 
     @Override
     public void run() {
-        while (/*isCollidingWithOpponent ||*/ checkCollisions()){
-//        while (true){
+        while (checkCollisions()){
             update();
             gamePanel.repaint();
             this.sleep(10);
         }
-
     }
-    public void update(){
 
+    public void update(){
         this.x += this.valX;
         this.y += this.valY;
-
     }
 
     private void sleep(int millis)      //add an interface
@@ -70,48 +64,46 @@ public class Bullet implements Runnable{
             throw new RuntimeException(e);
         }
     }
+
     private boolean checkWindowCollision(){
         return (!((this.y + this.height <= 0) || (this.y >= Sizes.WINDOW_MAX_HEIGHT) || (this.x + this.width <= 0) || (this.x >= Sizes.WINDOW_MAX_WIDTH)));
     }
+
     private boolean checkCollisions(){
-        if(!isCollidingWith(gamePanel.myPlayer) && isCollidingWith(gamePanel.opponent)){
-            if(isCreatedByPlayer){
-                gamePanel.myPlayerBullets.remove(this);
-                gamePanel.client.sendMessage("T" + bulletDamage);
-                return false;
-
+        if(!gamePanel.isOffline) {
+            if (!isCollidingWith(gamePanel.myPlayer) && isCollidingWith(gamePanel.opponent)) {
+                if (isCreatedByPlayer) {
+                    gamePanel.myPlayerBullets.remove(this);
+                    gamePanel.client.sendMessage("T" + bulletDamage);
+                    return false;
+                }
+            } else if (isCollidingWith(gamePanel.myPlayer) && !isCollidingWith(gamePanel.opponent)) {
+                if (!isCreatedByPlayer) {
+                    gamePanel.opponentBullets.remove(this);
+                gamePanel.myPlayer.takeDamage(bulletDamage);
+                    return false;
+                }
             }
-//            gamePanel.opponentBullets.remove(this);
-//            gamePanel.enemies.get(1).takeDamage(5);
         }
-        else if (isCollidingWith(gamePanel.myPlayer) && !isCollidingWith(gamePanel.opponent)) {
-            if(!isCreatedByPlayer)
-            {
-                gamePanel.opponentBullets.remove(this);
-                return false;
-
-            }
+        else{
+            return isCollidingWith(gamePanel.enemies);
         }
         return (checkWindowCollision());
     }
 
     private boolean isCollidingWith(Player player){
-        if(this.getRectangle().intersects(player.getRectangle())){
-//            player.takeDamage(10);
-            return true;
-        }
-        return false;
+        return (this.getRectangle().intersects(player.getRectangle()));
     }
 
     public boolean isCollidingWith(List<Enemy> enemies) {
         for(Enemy enemy : enemies) {
             if(this.getRectangle().intersects(enemy.getRectangle())){
                 gamePanel.myPlayerBullets.remove(this);
-                enemy.takeDamage(5);
-                return true;
+                enemy.takeDamage(bulletDamage);
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     public double getY()

@@ -21,8 +21,8 @@ public class Server {
             serverSocket = new ServerSocket(PORT);
             System.out.println("Server started on port " + PORT);
 
-            // Wait for clients to connect
-            while (true) {
+
+            while (clientNamesPointer < 2) {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("Client connected: " + clientSocket.getInetAddress().getHostName());
 
@@ -32,7 +32,7 @@ public class Server {
                 clientsIn.add(in);
                 out.writeObject(clientsNames[clientNamesPointer]);
                 clientNamesPointer++;
-                // Start a new thread to handle the client
+
                 ClientHandler handler = new ClientHandler(clientSocket, out);
                 new Thread(handler).start();
             }
@@ -72,7 +72,6 @@ public class Server {
                     broadcastMessage(message, out);
                 }
             } catch (IOException | ClassNotFoundException e) {
-                // Client disconnected, remove from client list
                 clientsOut.remove(out);
                 clientsIn.remove(out);
                 System.out.println("Client disconnected: " + clientSocket.getInetAddress().getHostName());

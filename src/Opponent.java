@@ -12,6 +12,7 @@ public class Opponent extends Thread implements Drawable {
 
     private Image opponentImage;
     double velY;
+
     public Opponent(GamePanel gamePanel){
         this.gamePanel = gamePanel;
 //        client = new Client();
@@ -22,7 +23,6 @@ public class Opponent extends Thread implements Drawable {
         velY = 0;
         bullets = new LinkedList<>();
         this.opponentImage = new ImageIcon("Images/img_4.png").getImage();
-
 
     }
     public double getX() {

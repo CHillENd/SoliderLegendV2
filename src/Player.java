@@ -6,12 +6,12 @@ public class Player extends Thread implements Drawable {
     private double playerHeight, playerWidth;
     private double velX = 0, velY = 0, accX = 0;
     private double gravity = 0.5;
-    private GamePanel gamePanel;
+    private JPanel gamePanel;
     private Image playerImage;
     private PlayerHealthBar healthBar;
 
     private boolean showHealthBar;
-    public Player(GamePanel gamePanel) {
+    public Player(JPanel gamePanel) {
         this.gamePanel = gamePanel;
         this.playerXPos = 200;
         this.playerYPos = Sizes.GAME_GROUND_LEVEL - 250;
@@ -58,16 +58,12 @@ public class Player extends Thread implements Drawable {
         if(this.showHealthBar)
         {
             healthBar.draw(g);
-
         }
     }
 
     public void run() {
         while (playerIsAlive()) {
             this.update();
-
-            System.out.println(healthBar.getCurrentHealth());
-
             gamePanel.repaint();
             this.sleep(10);
         }
@@ -76,6 +72,7 @@ public class Player extends Thread implements Drawable {
     private boolean playerIsAlive() {
         return (healthBar.getCurrentHealth() >= 0);
     }
+
     public int [] position()
     {
         int[] arr = {(int)this.playerXPos, (int)this.playerYPos};
@@ -84,7 +81,11 @@ public class Player extends Thread implements Drawable {
 
     private void update() {
         if (checkWindowCollision())
+        {
+            this.velX = 0;
+            this.velY = 0;
             return;
+        }
         this.velX += this.accX;
         this.velY += this.gravity;
         this.playerXPos += this.velX;
@@ -94,11 +95,6 @@ public class Player extends Thread implements Drawable {
             this.playerYPos = Sizes.GAME_GROUND_LEVEL - this.playerHeight;
             this.velY = 0;
         }
-        if (this.velX < 0 && this.accX == 0) {
-            this.velX += 0.1;
-        }
-
-
     }
 
     private void sleep(int millis) {

@@ -26,7 +26,7 @@ public class NavigationScreen extends JFrame implements ActionListener {
         navigationPanel.add(offlineButton);
 
         // create the game panel
-        gamePanel = new GamePanel(false);
+        gamePanel = new GamePanel();
         gamePanel.setBackground(Color.BLACK);
 
         // set the background of the JFrame to an image

@@ -7,7 +7,6 @@ public class Enemy extends Thread implements Drawable {
     private double velX = 0;
     private int healthBar = 10;
     private GamePanel gamePanel;
-//    private Rectangle hitbox;
     private Image enemyImage;
     public Enemy(GamePanel gamePanel, int xSpown) {
         this.gamePanel = gamePanel;
@@ -18,7 +17,6 @@ public class Enemy extends Thread implements Drawable {
 
         this.enemyImage = new ImageIcon("Images/img_4.png").getImage();
 
-//        this.hitbox = new Rectangle((int) playerXPos, (int) playerYPos, (int) playerWidth, (int) playerHeight);
     }
 
     public double getX() {
@@ -33,12 +31,9 @@ public class Enemy extends Thread implements Drawable {
     @Override
     public void draw(Graphics g) {
         g.drawImage(enemyImage, (int)this.x, (int)this.y, (int)this.width, (int)this.height, this.gamePanel);
-
-//        g.setColor(Color.RED);
-//        g.drawRect((int) this.playerXPos, (int) this.playerYPos, (int) this.playerWidth, (int) this.playerHeight);
     }
+
     public Rectangle getRectangle() {
-//        System.out.println(x +", "+ y +", "+ width +", "+ height);
         return new Rectangle((int) x, (int) y, (int) width, (int) height);
     }
 
@@ -55,7 +50,7 @@ public class Enemy extends Thread implements Drawable {
     private void update() {     //runs after the player
         this.x += 2 * ((this.gamePanel.myPlayer.getX() >= this.x) ? 1 : -1) ;
         if(isCollidingWith(gamePanel.myPlayer)){
-            gamePanel.myPlayer.takeDamage(1);
+            gamePanel.myPlayer.takeDamage(7);
             sleep(500); //give some time to run away
         }
 
