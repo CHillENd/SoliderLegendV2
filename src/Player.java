@@ -30,6 +30,8 @@ public class Player extends Thread implements Drawable {
     public double getY() {
         return this.playerYPos;
     }
+    public void setY(double y){ this.playerYPos = y;}
+
     public double getHeight() { return this.playerHeight; }
     public double getWidth() { return this.playerWidth; }
     public void setVelX(double newVelX) {
@@ -66,21 +68,12 @@ public class Player extends Thread implements Drawable {
     private boolean playerIsAlive() {
         return (healthBar.getCurrentHealth() >= 0);
     }
-
-    private String readFromSever()
-    {
-        return client.readFromServer();
-    }
-    void updatePlayerPos (int arr[]){
-
-    }
     public int [] position()
     {
-        int[] arr = new int [2];
-        arr[0] = (int)this.playerXPos;
-        arr[1] = (int)this.playerYPos;
+        int[] arr = {(int)this.playerXPos, (int)this.playerYPos};
         return arr;
     }
+
     private void update() {
         if (checkWindowCollision())
             return;
@@ -112,4 +105,8 @@ public class Player extends Thread implements Drawable {
         return (this.playerXPos + this.playerWidth + this.velX >= Sizes.WINDOW_MAX_WIDTH || this.playerXPos + this.velX <= 0);
     }
 
+    public void setPosition(int[] arr) {
+        setX(arr[0]);
+        setY(arr[1]);
+    }
 }

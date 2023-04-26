@@ -60,19 +60,6 @@ public class Client {
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
-//        try {
-//            System.out.println("Connected to server");
-//
-//            // Request position from the server
-//            out.writeObject("Hello There");
-//            out.flush();
-//
-//            // Wait for position from the server
-//            position = (int[]) in.readObject();
-//            System.out.println("Received position: " + Arrays.toString(position));
-//        } catch (IOException \| ClassNotFoundException e) {
-//            e.printStackTrace();
-//        }
     }
 
     public String getId() {
@@ -89,13 +76,8 @@ public class Client {
     }
 
     public void sendPosition(int[] position) {
-        try {
-            String positionString = Arrays.toString(position);
-            out.writeObject(positionString);
-            out.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String positionString = Arrays.toString(position);
+        sendMessage(positionString);
     }
 
     public String readFromServer()
@@ -110,22 +92,3 @@ public class Client {
     }
 
 }
-//
-//    public static void main(String[] args) {
-//        // Create a new client instance
-//        Client client = new Client();
-//
-//        // Send a position to the server
-//        int[] newPosition = {1, 2, 3}; // Replace with your desired position data
-//        client.sendPosition(newPosition);
-//
-//        // Close the socket and streams
-//        try {
-//            client.out.close();
-//            client.in.close();
-//            client.socket.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//}

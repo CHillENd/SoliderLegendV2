@@ -4,20 +4,20 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener, MouseListener
 {
     public Player myPlayer;
     public Player opponent;
-    public LinkedList<Bullet> bullets;
-//    Opponent opponent;
+    public LinkedList<Bullet> myPlayerBullets;
+    public LinkedList<Bullet> opponentBullets;
+
+    //    Opponent opponent;
     public List<Enemy> enemies;
     private Image backgroundImage;
-    private Client client;
+    public Client client;
     private boolean isOffline;
 //    private String id;
 
@@ -26,55 +26,81 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
         myPlayer = new Player(this);
         opponent = new Player(this);
+        myPlayerBullets = new LinkedList<>();
+        opponentBullets = new LinkedList<>();
 
-        bullets = new LinkedList<>();
-        enemies = Collections.synchronizedList(new LinkedList<Enemy>());
-        opponent.setX(myPlayer.getX() + 300);
-
+//        enemies = Collections.synchronizedList(new LinkedList<Enemy>());
+        opponent.setX(myPlayer.getX() + 400);
         client = new Client();
         String id = client.getId();
         checkPlayerId(id);
 
         this.isOffline = isOffline;
+    }
+
+    public void start() {
         new Thread(this).start();
-//        if(!isOffline) {
-//            opponent = new Opponent(this);
-//        }
+
     }
 
     @Override
     public void run() {
         myPlayer.start();
-        if(isOffline){
-            addEnemies();
-            while (true) {
-
-                List<Bullet> bulletsCopy = new ArrayList<>(bullets);
-                for (Bullet bullet : bulletsCopy) {
-                    if (bullet.getX() >= Sizes.WINDOW_MAX_WIDTH || bullet.getX() < 0) {
-                        bullets.remove(bullet);
-                    }
-                }
-            }
-        }
-        else{
+//        if(isOffline){
+//            addEnemies();
+//            while (true) {
+//
+//                List<Bullet> bulletsCopy = new ArrayList<>(bullets);
+//                for (Bullet bullet : bulletsCopy) {
+//                    if (bullet.getX() >= Sizes.WINDOW_MAX_WIDTH || bullet.getX() < 0) {
+//                        bullets.remove(bullet);
+//                    }
+//                }
+//            }
+//        }
+//        else{
             opponent.start();
 
             while(true){
-
                 client.sendPosition(myPlayer.position());
-                System.out.println(client.readFromServer());
+                String opponentMessage = client.readFromServer();
+                System.out.println(opponentMessage);
 
-                try {
-                    Thread.sleep(150);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                String firstLetter = opponentMessage.substring(0, 1);
+                switch (firstLetter){
+                    case ("S"):
+                        opponentIsShooting(opponentMessage.substring(2, opponentMessage.length() - 1));
+                        break;
+                    case("T"):
+                        System.out.println(opponentMessage);
+                        System.out.println(Integer.parseInt(opponentMessage.substring(1)));
+                        myPlayer.takeDamage(Integer.parseInt(opponentMessage.substring(1)));
+                        break;
+                    case("["):
+                        setOpponentPosition(opponentMessage);
+                        break;
                 }
 
+
+//                if(firstLetter.equals("S")) {
+//                }
+
+//                else{
+
+//                }
             }
-        }
+    }
 
+    private void opponentIsShooting(String shootingTarget)
+    {
+        int [] target = convertStringToArray(shootingTarget);
+        shootBullet(target[0], target[1], opponentBullets, opponent);
+    }
 
+    private void setOpponentPosition(String opponentPosition)
+    {
+        int [] arr = convertStringToArray(opponentPosition.substring(1, opponentPosition.length() - 1));
+        opponent.setPosition(arr);
     }
 
     public void paintComponent(Graphics g) {
@@ -85,19 +111,28 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 //        for (Enemy enemy : enemies) {
 //            enemy.draw(g);
 //        }
-        for (Bullet bullet : bullets) {
+        for (Bullet bullet : myPlayerBullets) {
             bullet.draw(g);
         }
 
+        for (Bullet bullet : opponentBullets) {
+            bullet.draw(g);
+        }
 
     }
 
 
-    public void shootBullet(double targetX, double targetY) {
-        Bullet bullet = new Bullet(this, (int) this.myPlayer.getX(), (int) this.myPlayer.getY(), targetX, targetY);
+    public void shootBullet(double targetX, double targetY, LinkedList<Bullet> bullets, Player player) {
+        Bullet bullet = new Bullet(this, (int) player.getX(), (int) player.getY(), targetX, targetY);
         bullets.add(bullet);
         new Thread(bullet).start();
     }
+
+//    public void shootOpponentBullet(double targetX, double targetY) {
+//        Bullet bullet = new Bullet(this, (int) opponent.getX(), (int) opponent.getY(), targetX, targetY);
+//        opponentBullets.add(bullet);
+//        new Thread(bullet).start();
+//    }
 
     private void addEnemies(){
         for(int i = 0; i < 7; i++) {
@@ -120,17 +155,30 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
     {
         backgroundImage = new ImageIcon("Images/img.png").getImage();
         this.setFocusable(true);        //move to setPanelSettings function
-        this.requestFocus();
+        this.requestFocusInWindow();
         this.addMouseListener(this);
         this.addKeyListener(this);
 
     }
+
+    private int [] convertStringToArray(String strArray)
+    {
+        String[] arrStringParts = strArray.split(", ");
+        int[] arr = new int[arrStringParts.length];
+
+        for (int i = 0; i < arrStringParts.length; i++) {
+            arr[i] = Integer.parseInt(arrStringParts[i]);
+        }
+        return arr;
+    }
+
     @Override
     public void keyTyped(KeyEvent e) {
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
+//        System.out.println("You Clicked: " + e.getKeyCode());
         switch (e.getKeyCode()) {
             case (KeyEvent.VK_D):
                 this.myPlayer.setAccX(0.1);
@@ -146,7 +194,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
                 }
                 this.myPlayer.jump();
                 break;
-
+//            case(KeyEvent.VK_SPACE):
+//                shootOpponentBullet(0,0);
         }
         //client.sendPosition(myPlayer.position());
     }
@@ -167,7 +216,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        shootBullet(e.getX(), e.getY());
+
+        shootBullet(e.getX(), e.getY(), myPlayerBullets, myPlayer);
+        int [] targetArray = {e.getX(), e.getY()};
+        client.sendMessage("S"+Arrays.toString(targetArray));
     }
 
     @Override
@@ -189,4 +241,5 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
     public void mouseExited(MouseEvent e) {
 
     }
+
 }
