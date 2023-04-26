@@ -35,6 +35,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
         String id = client.getId();
         checkPlayerId(id);
 
+        myPlayer.showHealthBar(true);
+        opponent.showHealthBar(false);
+
         this.isOffline = isOffline;
     }
 
@@ -64,7 +67,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
             while(true){
                 client.sendPosition(myPlayer.position());
                 String opponentMessage = client.readFromServer();
-                System.out.println(opponentMessage);
+//                System.out.println(opponentMessage);
 
                 String firstLetter = opponentMessage.substring(0, 1);
                 switch (firstLetter){
@@ -72,7 +75,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
                         opponentIsShooting(opponentMessage.substring(2, opponentMessage.length() - 1));
                         break;
                     case("T"):
-                        System.out.println(opponentMessage);
+//                        System.out.println(opponentMessage);
                         System.out.println(Integer.parseInt(opponentMessage.substring(1)));
                         myPlayer.takeDamage(Integer.parseInt(opponentMessage.substring(1)));
                         break;
@@ -94,7 +97,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
     private void opponentIsShooting(String shootingTarget)
     {
         int [] target = convertStringToArray(shootingTarget);
-        shootBullet(target[0], target[1], opponentBullets, opponent);
+        shootBullet(target[0], target[1], opponentBullets, opponent, false);
     }
 
     private void setOpponentPosition(String opponentPosition)
@@ -122,8 +125,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
     }
 
 
-    public void shootBullet(double targetX, double targetY, LinkedList<Bullet> bullets, Player player) {
-        Bullet bullet = new Bullet(this, (int) player.getX(), (int) player.getY(), targetX, targetY);
+    public void shootBullet(double targetX, double targetY, LinkedList<Bullet> bullets, Player player, boolean isShotByPlayer) {
+        Bullet bullet = new Bullet(this, (int) player.getX(), (int) player.getY(), targetX, targetY, isShotByPlayer);
         bullets.add(bullet);
         new Thread(bullet).start();
     }
@@ -217,7 +220,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
     @Override
     public void mouseClicked(MouseEvent e) {
 
-        shootBullet(e.getX(), e.getY(), myPlayerBullets, myPlayer);
+        shootBullet(e.getX(), e.getY(), myPlayerBullets, myPlayer, true);
         int [] targetArray = {e.getX(), e.getY()};
         client.sendMessage("S"+Arrays.toString(targetArray));
     }

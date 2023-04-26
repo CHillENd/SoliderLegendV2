@@ -9,11 +9,12 @@ public class Bullet implements Runnable{
     private double valX, valY;
     private GamePanel gamePanel;
     private Image bulletImage;
-    private boolean isCollidingWithPlayer;
-    private boolean isCollidingWithOpponent;
+    private boolean isCreatedByPlayer;
+    private boolean isMyPlayerShotMe;
+//    private boolean isCollidingWithOpponent;
 
-    public Bullet(GamePanel gamePanel, double x, double y , double targetX, double targetY) {
-        bulletDamage = 10;
+    public Bullet(GamePanel gamePanel, double x, double y , double targetX, double targetY, boolean isMyPlayerShotMe) {
+        bulletDamage = 5;
         this.gamePanel = gamePanel;
         this.x = x;
         this.y = y;
@@ -25,21 +26,18 @@ public class Bullet implements Runnable{
         this.valX = deltaX / distance * 10;
         this.valY = deltaY / distance * 10;
 
-        isCollidingWithPlayer = isCollidingWith(gamePanel.myPlayer);
-        isCollidingWithOpponent = isCollidingWith(gamePanel.opponent);
+        this.isCreatedByPlayer = isMyPlayerShotMe;
+//        isCollidingWithPlayer = isCollidingWith(gamePanel.myPlayer);
+//        isCollidingWithOpponent = isCollidingWith(gamePanel.opponent);
 
         this.bulletImage = new ImageIcon("Images/img_3.png").getImage();
     }
 
     public void draw(Graphics g) {
         g.drawImage(bulletImage, (int)this.x, (int)this.y, (int)this.width, (int)this.height, this.gamePanel);
-
-//        g.setColor(Color.BLACK);
-//        g.fillRect((int)x, (int)y, this.width, this.height);
     }
 
     public Rectangle getRectangle() {
-//        System.out.println(x+", "+y+", "+width+", "+ height);
         return new Rectangle((int) x, (int) y, (int) width, (int) height);
     }
 
@@ -49,7 +47,7 @@ public class Bullet implements Runnable{
 
     @Override
     public void run() {
-        while (isCollidingWithOpponent || checkCollisions()){
+        while (/*isCollidingWithOpponent ||*/ checkCollisions()){
 //        while (true){
             update();
             gamePanel.repaint();
@@ -62,8 +60,6 @@ public class Bullet implements Runnable{
         this.x += this.valX;
         this.y += this.valY;
 
-//        isCollidingWithPlayer = isCollidingWith(gamePanel.myPlayer);
-//        isCollidingWithOpponent = isCollidingWith(gamePanel.opponent);
     }
 
     private void sleep(int millis)      //add an interface
@@ -78,19 +74,30 @@ public class Bullet implements Runnable{
         return (!((this.y + this.height <= 0) || (this.y >= Sizes.WINDOW_MAX_HEIGHT) || (this.x + this.width <= 0) || (this.x >= Sizes.WINDOW_MAX_WIDTH)));
     }
     private boolean checkCollisions(){
-        if(isCollidingWith(gamePanel.opponent)){
-//            gamePanel.enemies.get(1).takeDamage(5);
-            return false;
-        }
+        if(!isCollidingWith(gamePanel.myPlayer) && isCollidingWith(gamePanel.opponent)){
+            if(isCreatedByPlayer){
+                gamePanel.myPlayerBullets.remove(this);
+                gamePanel.client.sendMessage("T" + bulletDamage);
+                return false;
 
+            }
+//            gamePanel.opponentBullets.remove(this);
+//            gamePanel.enemies.get(1).takeDamage(5);
+        }
+        else if (isCollidingWith(gamePanel.myPlayer) && !isCollidingWith(gamePanel.opponent)) {
+            if(!isCreatedByPlayer)
+            {
+                gamePanel.opponentBullets.remove(this);
+                return false;
+
+            }
+        }
         return (checkWindowCollision());
     }
 
     private boolean isCollidingWith(Player player){
         if(this.getRectangle().intersects(player.getRectangle())){
 //            player.takeDamage(10);
-            gamePanel.client.sendMessage("T" + bulletDamage);
-
             return true;
         }
         return false;

@@ -12,7 +12,6 @@ public class Opponent extends Thread implements Drawable {
 
     private Image opponentImage;
     double velY;
-//    public Client client;
     public Opponent(GamePanel gamePanel){
         this.gamePanel = gamePanel;
 //        client = new Client();
@@ -87,7 +86,7 @@ public class Opponent extends Thread implements Drawable {
     }
 
     public void shootBullet(double targetX, double targetY) {
-        Bullet bullet = new Bullet(gamePanel, (int) x, (int)y, targetX, targetY);
+        Bullet bullet = new Bullet(gamePanel, (int) x, (int)y, targetX, targetY, true);
         bullets.add(bullet);
         new Thread(bullet).start();
     }

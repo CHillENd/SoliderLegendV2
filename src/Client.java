@@ -66,7 +66,7 @@ public class Client {
         return this.id;
     }
 
-    public void sendMessage(String message) {
+    public synchronized void sendMessage(String message) {
         try {
             out.writeObject(message);
             out.flush();
@@ -75,7 +75,7 @@ public class Client {
         }
     }
 
-    public void sendPosition(int[] position) {
+    public synchronized void sendPosition(int[] position) {
         String positionString = Arrays.toString(position);
         sendMessage(positionString);
     }

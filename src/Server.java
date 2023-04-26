@@ -67,7 +67,8 @@ public class Server {
             try {
                 while (true) {
                     String message = (String) clientsIn.get(clientsOut.indexOf(out)).readObject();
-                    System.out.println("Received message from client: " + message);
+//                    System.out.println("Received message from client: " + message);
+//                    checkMesage(message);
                     broadcastMessage(message, out);
                 }
             } catch (IOException | ClassNotFoundException e) {
@@ -76,6 +77,11 @@ public class Server {
                 clientsIn.remove(out);
                 System.out.println("Client disconnected: " + clientSocket.getInetAddress().getHostName());
             }
+        }
+
+        private void checkMesage(String message) {
+            if(message.charAt(0) != '[')
+                System.out.println(message);
         }
     }
 }

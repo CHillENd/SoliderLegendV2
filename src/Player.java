@@ -9,14 +9,15 @@ public class Player extends Thread implements Drawable {
     private GamePanel gamePanel;
     private Image playerImage;
     private PlayerHealthBar healthBar;
-    Client client;
 
+    private boolean showHealthBar;
     public Player(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
         this.playerXPos = 200;
         this.playerYPos = Sizes.GAME_GROUND_LEVEL - 250;
         this.playerWidth = 95;
         this.playerHeight = 115;
+//        this.showHealthBar = showHealthBar;
         this.healthBar = new PlayerHealthBar();
         playerImage = new ImageIcon("Images/img_2.png").getImage();
 
@@ -31,7 +32,7 @@ public class Player extends Thread implements Drawable {
         return this.playerYPos;
     }
     public void setY(double y){ this.playerYPos = y;}
-
+    public void showHealthBar(boolean showHealthBar){ this.showHealthBar = showHealthBar;}
     public double getHeight() { return this.playerHeight; }
     public double getWidth() { return this.playerWidth; }
     public void setVelX(double newVelX) {
@@ -54,12 +55,19 @@ public class Player extends Thread implements Drawable {
     @Override
     public void draw(Graphics g) {
         g.drawImage(playerImage, (int)this.playerXPos, (int)this.playerYPos, (int)this.playerWidth, (int)this.playerHeight, this.gamePanel);
-        healthBar.draw(g);
+        if(this.showHealthBar)
+        {
+            healthBar.draw(g);
+
+        }
     }
 
     public void run() {
         while (playerIsAlive()) {
             this.update();
+
+            System.out.println(healthBar.getCurrentHealth());
+
             gamePanel.repaint();
             this.sleep(10);
         }
