@@ -1,7 +1,4 @@
-import javax.swing.*;
-
-
-public class Game {
+public class StartGame {
     public static void main(String[] args) {
 //        JFrame gameFrame = new JFrame("Twins War");
 //        gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -14,7 +11,7 @@ public class Game {
 //        gamePanel.start();
 //------------------------------------------------------------------------------------------///////////////
 //        Server server = new Server();
-        FrameTest ft = new FrameTest();
+        GUIFrame gui = new GUIFrame();
 
     }
 

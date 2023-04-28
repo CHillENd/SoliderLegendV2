@@ -10,7 +10,7 @@ public class Player extends Thread implements Drawable {
     private Image playerImage;
     private PlayerHealthBar healthBar;
 
-    private boolean showHealthBar;
+    private boolean showHealthBar = true;
     public Player(JPanel gamePanel) {
         this.gamePanel = gamePanel;
         this.playerXPos = 200;
@@ -67,6 +67,7 @@ public class Player extends Thread implements Drawable {
             gamePanel.repaint();
             this.sleep(10);
         }
+
     }
 
     private boolean playerIsAlive() {
@@ -112,5 +113,10 @@ public class Player extends Thread implements Drawable {
     public void setPosition(int[] arr) {
         setX(arr[0]);
         setY(arr[1]);
+    }
+
+    public void setImage(String s) {
+        playerImage = new ImageIcon(s).getImage();
+
     }
 }

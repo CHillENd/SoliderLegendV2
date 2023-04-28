@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -21,6 +22,7 @@ public class Client {
             id = in.readObject().toString();
             System.out.println(id);
         } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Please try again later", "SERVER IS DOWN", JOptionPane.INFORMATION_MESSAGE);
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);

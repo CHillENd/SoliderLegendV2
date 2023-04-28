@@ -19,13 +19,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
     public boolean isOffline;
 
     public GamePanel() {
-//        setPanelSettings();
-
         myPlayer = new Player(this);
         opponent = new Player(this);
         myPlayerBullets = new LinkedList<>();
         opponentBullets = new LinkedList<>();
-
         enemies = Collections.synchronizedList(new LinkedList<Enemy>());
         opponent.setX(myPlayer.getX() + 400);
     }
@@ -47,7 +44,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
         myPlayer.start();
         if(isOffline){
             addEnemies();
-            while (true) {
+            while (myPlayer.isAlive()) {
 //                myPlayer.setX(myPlayer.getX() + 1);
             }
         }
@@ -73,6 +70,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
             }
         }
+        JOptionPane.showMessageDialog(null, "You have died!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
+
+        setVisible(false);
+        GUIFrame gui = new GUIFrame();
     }
 
     private void opponentIsShooting(String shootingTarget)
@@ -189,12 +190,21 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
     @Override
     public void mouseClicked(MouseEvent e) {
+//        checkShootPosition(e.getX());
         shootBullet(e.getX(), e.getY(), myPlayerBullets, myPlayer, true);
         if(!isOffline){
             int [] targetArray = {e.getX(), e.getY()};
             client.sendMessage("S"+Arrays.toString(targetArray));
 
         }
+    }
+
+    private void checkShootPosition(int x) {
+        if(x>=myPlayer.getX())
+            myPlayer.setImage("Images/img_2.png");
+        else
+            myPlayer.setImage("Images/img_2_left.png");
+
     }
 
     @Override
@@ -217,4 +227,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
     }
 
+    public boolean isGameOver() {
+        return myPlayer.isAlive();
+    }
 }

@@ -4,12 +4,12 @@ import javax.swing.JPanel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class FrameTest {
+public class GUIFrame {
     private JFrame frame;
     private JPanel startPanel;
     private GamePanel gamePanel;
 
-    public FrameTest() {
+    public GUIFrame() {
         frame = new JFrame("Twins Wars");
 
         startPanel = new JPanel();
@@ -38,6 +38,7 @@ public class FrameTest {
                 frame.revalidate();
                 gamePanel.setPanelSettings();
                 gamePanel.start(true);
+
             }
         });
 
@@ -49,7 +50,6 @@ public class FrameTest {
         frame.setSize(Sizes.WINDOW_MAX_WIDTH, Sizes.WINDOW_MAX_HEIGHT);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        System.out.println("here");
         frame.setVisible(true);
     }
     }
