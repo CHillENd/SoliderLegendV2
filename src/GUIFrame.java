@@ -34,10 +34,12 @@ public class GUIFrame {
 
         startOfflineButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                frame.setContentPane(gamePanel);
+              chooseLevelPanel panel = new chooseLevelPanel(gamePanel, frame);
+                frame.setContentPane(panel);
                 frame.revalidate();
-                gamePanel.setPanelSettings();
-                gamePanel.start(true);
+//                gamePanel.setPanelSettings();
+//                gamePanel.start(true);
+
 
             }
         });

@@ -1,5 +1,8 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 
 public class Player extends Thread implements Drawable {
     private double playerXPos, playerYPos;
@@ -20,6 +23,7 @@ public class Player extends Thread implements Drawable {
 //        this.showHealthBar = showHealthBar;
         this.healthBar = new PlayerHealthBar();
         playerImage = new ImageIcon("Images/img_2.png").getImage();
+
 
 //        client = new Client();
     }
@@ -107,7 +111,7 @@ public class Player extends Thread implements Drawable {
     }
 
     private boolean checkWindowCollision() {
-        return (this.playerXPos + this.playerWidth + this.velX >= Sizes.WINDOW_MAX_WIDTH || this.playerXPos + this.velX <= 0);
+        return (this.playerXPos + this.playerWidth + this.velX >= Sizes.WINDOW_MAX_WIDTH - 1 || this.playerXPos + this.velX <= 2);
     }
 
     public void setPosition(int[] arr) {

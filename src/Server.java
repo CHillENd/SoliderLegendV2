@@ -32,9 +32,9 @@ public class Server {
                 clientsIn.add(in);
                 out.writeObject(clientsNames[clientNamesPointer]);
                 clientNamesPointer++;
-
                 ClientHandler handler = new ClientHandler(clientSocket, out);
                 new Thread(handler).start();
+
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -67,8 +67,6 @@ public class Server {
             try {
                 while (true) {
                     String message = (String) clientsIn.get(clientsOut.indexOf(out)).readObject();
-//                    System.out.println("Received message from client: " + message);
-//                    checkMesage(message);
                     broadcastMessage(message, out);
                 }
             } catch (IOException | ClassNotFoundException e) {
@@ -78,9 +76,5 @@ public class Server {
             }
         }
 
-        private void checkMesage(String message) {
-            if(message.charAt(0) != '[')
-                System.out.println(message);
-        }
     }
 }

@@ -46,8 +46,8 @@ public class Bullet implements Runnable{
     public void run() {
         while (checkCollisions()){
             update();
-            gamePanel.repaint();
             this.sleep(10);
+            gamePanel.repaint();
         }
     }
 

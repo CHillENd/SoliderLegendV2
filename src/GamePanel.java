@@ -11,18 +11,19 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 {
     public Player myPlayer;
     public Player opponent;
-    public LinkedList<Bullet> myPlayerBullets;
-    public LinkedList<Bullet> opponentBullets;
+    public List<Bullet> myPlayerBullets;
+    public List<Bullet> opponentBullets;
     public List<Enemy> enemies;
     private Image backgroundImage;
     public Client client;
     public boolean isOffline;
+    private int difficulty;
 
     public GamePanel() {
         myPlayer = new Player(this);
         opponent = new Player(this);
-        myPlayerBullets = new LinkedList<>();
-        opponentBullets = new LinkedList<>();
+        myPlayerBullets = Collections.synchronizedList(new LinkedList<Bullet>());
+        opponentBullets = Collections.synchronizedList(new LinkedList<Bullet>());
         enemies = Collections.synchronizedList(new LinkedList<Enemy>());
         opponent.setX(myPlayer.getX() + 400);
     }
@@ -38,6 +39,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
         }
         new Thread(this).start();
     }
+    public void setDifficulty(int difficulty){ this.difficulty = difficulty;}
 
     @Override
     public void run() {
@@ -51,7 +53,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
         else {
             opponent.start();
 
-            while (true) {
+            while (myPlayer.isAlive()) {
                 client.sendPosition(myPlayer.position());
                 String opponentMessage = client.readFromServer();
 
@@ -113,14 +115,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
     }
 
 
-    public void shootBullet(double targetX, double targetY, LinkedList<Bullet> bullets, Player player, boolean isShotByPlayer) {
+    public void shootBullet(double targetX, double targetY, List<Bullet> bullets, Player player, boolean isShotByPlayer) {
         Bullet bullet = new Bullet(this, (int) player.getX(), (int) player.getY(), targetX, targetY, isShotByPlayer);
         bullets.add(bullet);
         new Thread(bullet).start();
     }
 
     private void addEnemies(){
-        for(int i = 0; i < 7; i++) {
+        for(int i = 0; i < 6 * difficulty; i++) {
             Enemy enemy = new Enemy(this, i * 100 + 400);
             enemy.start();
             enemies.add(enemy);
@@ -199,13 +201,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
         }
     }
 
-    private void checkShootPosition(int x) {
-        if(x>=myPlayer.getX())
-            myPlayer.setImage("Images/img_2.png");
-        else
-            myPlayer.setImage("Images/img_2_left.png");
-
-    }
+//    private void checkShootPosition(int x) {
+//        if(x>=myPlayer.getX())
+//            myPlayer.setImage("Images/img_2.png");
+//        else
+//            myPlayer.setImage("Images/img_2_left.png");
+//
+//    }
 
     @Override
     public void mousePressed(MouseEvent e) {
